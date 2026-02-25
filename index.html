@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="Pro.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Resume Generator · Exact A4 Fit</title>
+    <!-- html2canvas and jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body {
+            background: #eef2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0.5rem;
+        }
+        .main-container {
+            max-width: 800px;
+            width: 100%;
+        }
+        /* Step Indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: 50px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .step {
+            flex: 1;
+            text-align: center;
+            font-weight: 700;
+            color: #aaa;
+        }
+        .step.active {
+            color: #0f3d3e;
+        }
+        .step.completed {
+            color: #1e4a5f;
+        }
+        .step .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            background: #eee;
+            margin-right: 5px;
+        }
+        .step.active .step-number {
+            background: #0f3d3e;
+            color: white;
+        }
+        .step.completed .step-number {
+            background: #1e4a5f;
+            color: white;
+        }
+        /* Form Card */
+        .form-card {
+            background: white;
+            padding: 2rem 1.5rem;
+            border-radius: 24px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .step-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-left: 8px solid #2c3e50;
+            padding-left: 1rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.2rem;
+        }
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .field-group label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1e2b37;
+        }
+        .field-group input,
+        .field-group textarea,
+        .field-group select {
+            padding: 0.7rem;
+            border: 1px solid #b0bec5;
+            border-radius: 12px;
+            font-size: 1rem;
+        }
+        .photo-upload {
+            flex-direction: row;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .photo-upload input {
+            flex: 1;
+            min-width: 200px;
+        }
+        /* Academic table */
+        .acad-wrapper {
+            margin: 1.5rem 0 0.5rem;
+            border: 1px solid #9aa9b5;
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+        .acad-header {
+            background: #d2d9e0;
+            display: grid;
+            grid-template-columns: 50px 1.5fr 1.5fr 100px 100px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            padding: 0.8rem 0.5rem;
+            border-bottom: 2px solid #2c3e50;
+            min-width: 600px;
+        }
+        .acad-rows {
+            background: #fafcfc;
+            min-width: 600px;
+        }
+        .acad-row {
+            display: grid;
+            grid-template-columns: 50px 1.5fr 1.5fr 100px 100px;
+            gap: 0.2rem;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #ccd7e0;
+        }
+        .acad-row span {
+            font-weight: 600;
+            text-align: center;
+        }
+        .acad-row input {
+            width: 100%;
+            padding: 0.4rem;
+            border: 1px solid #a0b3c2;
+            border-radius: 6px;
+        }
+        .btn-add-row {
+            margin: 0.8rem 0.5rem;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        .nav-btn {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .generate-btn {
+            background: #0f3d3e;
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 800;
+            border: none;
+            border-radius: 50px;
+            padding: 0.8rem 2rem;
+            margin: 2rem 0 0.5rem;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+        }
+        /* Resume Preview - EXACT A4 dimensions */
+        .resume-preview-container {
+            background: white;
+            padding: 1.5rem 0.5rem;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.15);
+            margin-top: 2rem;
+        }
+        .resume {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            box-sizing: border-box;
+            background: white;
+            margin: 0 auto;
+            font-size: 14px;
+            line-height: 1.5;
+            border: 1px solid #d0d7de;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .section-head {
+            background: #e0e0e0;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 0.5rem 1rem;
+            margin: 1.2rem 0 0.8rem 0;
+            font-size: 1.1rem;
+            border-left: 5px solid #2c3e50;
+        }
+        h1.resume-title {
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-align: center;
+            text-transform: uppercase;
+            margin: 0 0 1.5rem 0;
+            color: #1e2b37;
+        }
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .left-details {
+            flex: 2;
+            min-width: 200px;
+        }
+        .left-details .full-name {
+            font-weight: 800;
+            font-size: 2rem;
+            line-height: 1.2;
+            margin-bottom: 0.25rem;
+        }
+        .left-details .designation {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #2c3e50;
+        }
+        .photo-box {
+            width: 100px;
+            height: 120px;
+            border: 3px solid #2c3e50;
+            background: #f0f4f8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .photo-placeholder {
+            color: #5f6c7a;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        .acad-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.8rem 0;
+        }
+        .acad-table th {
+            background: #e0e0e0;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 0.6rem 0.2rem;
+            border: 1.5px solid #2c3e50;
+            font-size: 0.85rem;
+        }
+        .acad-table td {
+            border: 1.5px solid #2c3e50;
+            padding: 0.5rem 0.3rem;
+        }
+        .personal-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.7rem 1.5rem;
+            padding: 0.5rem 0;
+        }
+        .personal-info-grid div {
+            font-weight: 500;
+        }
+        .personal-info-grid span {
+            font-weight: 800;
+            display: inline-block;
+            min-width: 110px;
+        }
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding: 1.5rem 0 0.3rem;
+            border-top: 3px dashed #2c3e50;
+            font-weight: 600;
+            flex-wrap: wrap;
+        }
+        .signature-right {
+            font-weight: 800;
+            text-align: right;
+        }
+        .download-btn {
+            background: #1e4a5f;
+            color: white;
+            border: none;
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            margin: 1.5rem 0 0.5rem;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+        }
+        .hidden { display: none; }
+        .text-block { white-space: pre-line; padding: 0 0.5rem; }
+        @media (max-width: 600px) {
+            h1.resume-title { font-size: 2.5rem; }
+            .left-details .full-name { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+        <div class="step active" id="step1-indicator"><span class="step-number">1</span> Personal</div>
+        <div class="step" id="step2-indicator"><span class="step-number">2</span> Education</div>
+        <div class="step" id="step3-indicator"><span class="step-number">3</span> Declaration</div>
+    </div>
+
+    <!-- Step 1: Personal Details (all empty) -->
+    <div id="step1" class="form-card">
+        <h2 class="step-title">📋 Personal Details</h2>
+        <div class="form-grid">
+            <div class="field-group"><label>Full Name *</label><input type="text" id="fullName" placeholder="John Doe"></div>
+            <div class="field-group"><label>Designation</label><input type="text" id="designation" placeholder="Computer Operator"></div>
+            <div class="field-group"><label>Address</label><input type="text" id="address" placeholder="123, Park Street, Mumbai"></div>
+            <div class="field-group"><label>Mobile Number</label><input type="tel" id="mobile" placeholder="+91 98765 43210"></div>
+            <div class="field-group"><label>Email</label><input type="email" id="email" placeholder="john.doe@example.com"></div>
+            <div class="field-group photo-upload"><label>📷 Passport photo</label><input type="file" id="photoUpload" accept="image/*"></div>
+            <div class="field-group"><label>Father's Name</label><input type="text" id="fatherName" placeholder="Mr. Robert Doe"></div>
+            <div class="field-group"><label>Date of Birth</label><input type="date" id="dob"></div>
+            <div class="field-group"><label>Language Known</label><input type="text" id="languages" placeholder="English, Hindi, Marathi"></div>
+            <div class="field-group"><label>Gender</label>
+                <select id="gender"><option value="" selected disabled>Select gender</option><option>Male</option><option>Female</option><option>Other</option></select>
+            </div>
+            <div class="field-group"><label>Nationality</label><input type="text" id="nationality" placeholder="Indian"></div>
+            <div class="field-group"><label>Marital Status</label>
+                <select id="marital"><option value="" selected disabled>Select</option><option>Single</option><option>Married</option><option>Divorced</option></select>
+            </div>
+        </div>
+        <div class="nav-buttons"><button class="nav-btn" id="step1-next">Next →</button></div>
+    </div>
+
+    <!-- Step 2: Education & Work (empty) -->
+    <div id="step2" class="form-card hidden">
+        <h2 class="step-title">📚 Education & Work</h2>
+        <div class="field-group"><label>CAREER OBJECTIVE</label><textarea id="careerObj" rows="2" placeholder="To obtain a challenging position..."></textarea></div>
+        <div style="margin-top:1.5rem;">
+            <label style="font-weight:800;">📘 ACADEMIC QUALIFICATION</label>
+            <div class="acad-wrapper">
+                <div class="acad-header"><span>S.No</span><span>Qualification</span><span>University / Board</span><span>Year</span><span>Per %</span></div>
+                <div id="acadRowsContainer" class="acad-rows">
+                    <div class="acad-row"><span>1</span><input type="text" class="qual" placeholder="B.Sc (IT)"><input type="text" class="board" placeholder="Mumbai University"><input type="text" class="year" placeholder="2022"><input type="text" class="percent" placeholder="78%"></div>
+                </div>
+                <button type="button" id="addAcademicRow" class="btn-add-row">+ Add more row</button>
+            </div>
+        </div>
+        <div class="field-group"><label>OTHER QUALIFICATION</label><textarea id="otherQual" rows="2" placeholder="Diploma in Computer Application, Tally ERP"></textarea></div>
+        <div class="field-group"><label>WORK EXPERIENCE</label><textarea id="workExp" rows="2" placeholder="2 years as Computer Operator at XYZ Ltd."></textarea></div>
+        <div class="nav-buttons"><button class="nav-btn" id="step2-prev">← Previous</button><button class="nav-btn" id="step2-next">Next →</button></div>
+    </div>
+
+    <!-- Step 3: Declaration (empty) -->
+    <div id="step3" class="form-card hidden">
+        <h2 class="step-title">📝 Declaration</h2>
+        <div class="field-group"><label>DECLARATION</label><textarea id="declarationText" rows="3" placeholder="I hereby declare that the above information is true..."></textarea></div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin:1.5rem 0;">
+            <div class="field-group" style="flex:1;"><label>Date</label><input type="text" id="resumeDate" placeholder="24 February 2026"></div>
+            <div class="field-group" style="flex:1;"><label>Place</label><input type="text" id="resumePlace" placeholder="Mumbai"></div>
+            <div class="field-group" style="flex:1;"><label>Signature name</label><input type="text" id="signatureName" placeholder="Johnathan Doe"></div>
+        </div>
+        <div class="nav-buttons"><button class="nav-btn" id="step3-prev">← Previous</button><button class="nav-btn" id="step3-generate">Generate Resume</button></div>
+    </div>
+
+    <!-- Resume Preview (hidden initially) -->
+    <div id="resumePreviewSection" class="resume-preview-container hidden">
+        <div id="resumeContent" class="resume"></div>
+        <div style="text-align:center;"><button class="download-btn" id="downloadPdfBtn">📥 DOWNLOAD PDF (A4)</button></div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ----- DOM elements -----
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const step1Ind = document.getElementById('step1-indicator');
+        const step2Ind = document.getElementById('step2-indicator');
+        const step3Ind = document.getElementById('step3-indicator');
+        const next1 = document.getElementById('step1-next');
+        const prev2 = document.getElementById('step2-prev');
+        const next2 = document.getElementById('step2-next');
+        const prev3 = document.getElementById('step3-prev');
+        const generateBtnStep = document.getElementById('step3-generate');
+        const addRowBtn = document.getElementById('addAcademicRow');
+        const acadRowsContainer = document.getElementById('acadRowsContainer');
+        const photoInput = document.getElementById('photoUpload');
+        const downloadBtn = document.getElementById('downloadPdfBtn');
+        const previewSection = document.getElementById('resumePreviewSection');
+        const resumeContent = document.getElementById('resumeContent');
+
+        let photoDataURL = null;
+
+        // Step navigation
+        function showStep(step) {
+            step1.classList.add('hidden');
+            step2.classList.add('hidden');
+            step3.classList.add('hidden');
+            step1Ind.classList.remove('active', 'completed');
+            step2Ind.classList.remove('active', 'completed');
+            step3Ind.classList.remove('active', 'completed');
+            if (step === 1) {
+                step1.classList.remove('hidden');
+                step1Ind.classList.add('active');
+                step2Ind.classList.add('completed');
+            } else if (step === 2) {
+                step2.classList.remove('hidden');
+                step1Ind.classList.add('completed');
+                step2Ind.classList.add('active');
+            } else if (step === 3) {
+                step3.classList.remove('hidden');
+                step1Ind.classList.add('completed');
+                step2Ind.classList.add('completed');
+                step3Ind.classList.add('active');
+            }
+        }
+        next1.addEventListener('click', () => showStep(2));
+        prev2.addEventListener('click', () => showStep(1));
+        next2.addEventListener('click', () => showStep(3));
+        prev3.addEventListener('click', () => showStep(2));
+
+        // Add academic row
+        addRowBtn.addEventListener('click', function() {
+            const rows = document.querySelectorAll('.acad-row');
+            const newIndex = rows.length + 1;
+            const newRow = document.createElement('div');
+            newRow.className = 'acad-row';
+            newRow.innerHTML = `<span>${newIndex}</span><input type="text" class="qual" placeholder="Qualification"><input type="text" class="board" placeholder="Board/University"><input type="text" class="year" placeholder="Year"><input type="text" class="percent" placeholder="%">`;
+            acadRowsContainer.appendChild(newRow);
+        });
+
+        // Photo handling
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => { photoDataURL = ev.target.result; };
+                reader.readAsDataURL(file);
+            } else photoDataURL = null;
+        });
+
+        // Collect academic data
+        function getAcademicData() {
+            const rows = document.querySelectorAll('.acad-row');
+            const data = [];
+            rows.forEach((row, idx) => {
+                data.push({
+                    sno: idx+1,
+                    qual: row.querySelector('.qual')?.value || '',
+                    board: row.querySelector('.board')?.value || '',
+                    year: row.querySelector('.year')?.value || '',
+                    percent: row.querySelector('.percent')?.value || ''
+                });
+            });
+            return data;
+        }
+
+        // Generate preview
+        function generatePreview() {
+            const fullName = document.getElementById('fullName').value || 'Your Name';
+            const designation = document.getElementById('designation').value || '';
+            const address = document.getElementById('address').value || '';
+            const mobile = document.getElementById('mobile').value || '';
+            const email = document.getElementById('email').value || '';
+            const careerObj = document.getElementById('careerObj').value || '';
+            const otherQual = document.getElementById('otherQual').value || '';
+            const workExp = document.getElementById('workExp').value || '';
+            const fatherName = document.getElementById('fatherName').value || '';
+            const dob = document.getElementById('dob').value || '';
+            const languages = document.getElementById('languages').value || '';
+            const gender = document.getElementById('gender').value || '';
+            const nationality = document.getElementById('nationality').value || '';
+            const marital = document.getElementById('marital').value || '';
+            const declaration = document.getElementById('declarationText').value || '';
+            const resumeDate = document.getElementById('resumeDate').value || '';
+            const resumePlace = document.getElementById('resumePlace').value || '';
+            const signatureName = document.getElementById('signatureName').value || '';
+
+            const academicData = getAcademicData();
+
+            let photoHTML = `<div class="photo-box"><div class="photo-placeholder">📷 Photo</div></div>`;
+            if (photoDataURL) photoHTML = `<div class="photo-box"><img src="${photoDataURL}" alt="passport photo"></div>`;
+
+            let academicRows = '';
+            academicData.forEach(item => {
+                academicRows += `<tr><td>${item.sno}</td><td>${item.qual}</td><td>${item.board}</td><td>${item.year}</td><td>${item.percent}</td></tr>`;
+            });
+            if (academicRows === '') academicRows = '<tr><td colspan="5" style="text-align:center;">— no data —</td></tr>';
+
+            const personalHTML = `<div class="personal-info-grid">
+                <div><span>Father's Name :</span> ${fatherName}</div>
+                <div><span>Date of Birth :</span> ${dob}</div>
+                <div><span>Language Known :</span> ${languages}</div>
+                <div><span>Gender :</span> ${gender}</div>
+                <div><span>Nationality :</span> ${nationality}</div>
+                <div><span>Marital Status :</span> ${marital}</div>
+            </div>`;
+
+            const resumeHTML = `
+                <h1 class="resume-title">RESUME</h1>
+                <div class="top-row"><div class="left-details"><div class="full-name">${fullName}</div><div class="designation">${designation}</div><p>${address}</p><p>${mobile}</p><p>${email}</p></div>${photoHTML}</div>
+                <div class="section-head">CAREER OBJECTIVE</div><div class="text-block">${careerObj}</div>
+                <div class="section-head">ACADEMIC QUALIFICATION</div><table class="acad-table"><thead><tr><th>S.No</th><th>Qualification</th><th>University / Board</th><th>Year</th><th>Per %</th></tr></thead><tbody>${academicRows}</tbody></table>
+                <div class="section-head">OTHER QUALIFICATION</div><div class="text-block">${otherQual}</div>
+                <div class="section-head">WORK EXPERIENCE</div><div class="text-block">${workExp}</div>
+                <div class="section-head">PERSONAL INFORMATION</div>${personalHTML}
+                <div class="section-head">DECLARATION</div><div class="text-block">${declaration}</div>
+                <div class="bottom-row"><div><strong>Date :</strong> ${resumeDate} &nbsp;&nbsp; <strong>Place :</strong> ${resumePlace}</div><div class="signature-right">${signatureName}</div></div>
+            `;
+            resumeContent.innerHTML = resumeHTML;
+        }
+
+        // Generate button
+        generateBtnStep.addEventListener('click', function() {
+            const file = photoInput.files[0];
+            if (file && !photoDataURL) {
+                const reader = new FileReader();
+                reader.onload = (ev) => { photoDataURL = ev.target.result; generatePreview(); previewSection.classList.remove('hidden'); };
+                reader.readAsDataURL(file);
+            } else { generatePreview(); previewSection.classList.remove('hidden'); }
+        });
+
+        // PDF Download – ensures perfect A4 fit
+        downloadBtn.addEventListener('click', async function() {
+            const element = document.getElementById('resumeContent');
+            if (!element) return;
+
+            downloadBtn.disabled = true;
+            downloadBtn.textContent = 'Generating PDF...';
+
+            try {
+                // Wait for all images to load
+                await Promise.all(Array.from(element.getElementsByTagName('img')).map(img => {
+                    if (img.complete && img.naturalHeight) return Promise.resolve();
+                    return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
+                }));
+
+                // Render at high scale (4x) for quality
+                const canvas = await html2canvas(element, {
+                    scale: 4,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: false
+                });
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pdfWidth = 210; // A4 width in mm
+                const pdfHeight = 297; // A4 height in mm
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+
+                // Calculate image dimensions to maintain aspect ratio and fit within A4
+                let imgWidth = pdfWidth;
+                let imgHeight = (canvasHeight * pdfWidth) / canvasWidth;
+
+                // If height exceeds page, scale to fit height instead
+                if (imgHeight > pdfHeight) {
+                    imgHeight = pdfHeight;
+                    imgWidth = (canvasWidth * pdfHeight) / canvasHeight;
+                }
+
+                // Center horizontally
+                const xOffset = (pdfWidth - imgWidth) / 2;
+
+                // Add image to PDF (positioned at top)
+                pdf.addImage(imgData, 'JPEG', xOffset, 0, imgWidth, imgHeight);
+                pdf.save('Resume.pdf');
+            } catch (error) {
+                console.error(error);
+                alert('PDF generation failed. Please try again.');
+            } finally {
+                downloadBtn.disabled = false;
+                downloadBtn.textContent = '📥 DOWNLOAD PDF (A4)';
+            }
+        });
+    })();
+</script>
+</body>
+</html>
