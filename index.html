@@ -1,224 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Resume Builder · Pro Developing</title>
-  <link rel="icon" type="image/png" href="Pro.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <!-- Google Font: Inter (bold & clean) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --footer-height: 70px;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f3f4f6;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
-    /* new navbar style (no whatsapp) */
-    .new-nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 50;
-      background: rgba(255,255,255,0.98);
-      backdrop-filter: blur(4px);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.02);
-      padding: 0.6rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .logo-blue {
-      color: #007BFF;
-      font-weight: 800;
-      font-size: 1.9rem;
-      letter-spacing: -0.5px;
-    }
-    .logo-orange {
-      color: #FF6F00;
-      font-weight: 800;
-      font-size: 1.9rem;
-      letter-spacing: -0.5px;
-    }
-    /* main container */
-    .main-container {
-      width: 100%;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px 20px;
-      padding-top: 96px;
-      padding-bottom: calc(var(--footer-height) + 24px);
-      flex: 1 0 auto;
-    }
+    <meta charset="UTF-8" />
+    <title>Resume Builder · Pro Toolss</title>
+    <!-- FAVICON – updated with your image URL -->
+    <link rel="icon" type="image/png" href="https://i.ibb.co/FkJPMZ8r/Chat-GPT-Image-Jun-18-2026-07-58-22-AM.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <style>
+        /* ===== GLOBAL RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 75px;
+            /* space for fixed navbar */
+            overflow-x: hidden;
+        }
 
-    /* resume card */
-    .resume-card {
-      background: white;
-      border-radius: 1.5rem;
-      padding: 1.2rem;
-      box-shadow: 0 20px 30px -10px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-    }
-    .resume-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 25px 35px -10px rgba(0,0,0,0.15);
-    }
+        /* ===== NEW NAVBAR (from second file) ===== */
+        .new-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-    /* image container */
-  .demo-img-wrapper {
-  width: 100%;
-  aspect-ratio: 1080 / 1508;
-  border-radius: 1rem;
-  overflow: hidden;
-  background: #f8fafc;
-  border: 2px solid #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .logo-blue {
+            color: #007BFF;
+        }
+        .logo-orange {
+            color: #FF6F00;
+        }
 
-    /* actual image styling */
-    .resume-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.3s ease;
-    }
-    .resume-card:hover .resume-image {
-      transform: scale(1.03);
-    }
+        .home-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+        }
+        .home-btn .lines {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .home-btn .lines span {
+            width: 24px;
+            height: 3px;
+            background: #1e293b;
+            border-radius: 10px;
+        }
+        .home-btn .label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-top: 3px;
+            text-transform: uppercase;
+        }
 
-    /* template name */
-    .template-name {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-top: 0.75rem;
-      margin-bottom: 0.2rem;
-      letter-spacing: -0.3px;
-    }
+        /* ===== MAIN CONTENT ===== */
+        .main-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 20px;
+            padding-bottom: 90px;
+            /* space for fixed footer on mobile */
+            flex: 1 0 auto;
+        }
 
-    .template-sub {
-      font-size: 0.85rem;
-      color: #475569;
-    }
+        /* ===== RESUME CARDS ===== */
+        .resume-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 1.2rem;
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .resume-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 35px -10px rgba(0, 0, 0, 0.15);
+        }
 
-    /* footer exactly as requested */
-    footer {
-      background: #0f172a;
-      color: white;
-      height: var(--footer-height);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 12px;
-      box-sizing: border-box;
-      flex-shrink: 0;
-      font-size: 1rem;
-    }
-    .design-footer {
-      color: #94a3b8;
-    }
-    .design-footer .yellow {
-      color: #fbbf24;
-      font-weight: 700;
-      text-decoration: none;
-    }
+        .demo-img-wrapper {
+            width: 100%;
+            aspect-ratio: 1080 / 1508;
+            border-radius: 1rem;
+            overflow: hidden;
+            background: #f8fafc;
+            border: 2px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    /* on mobile, footer fixed */
-    @media (max-width: 768px) {
-      footer {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 35;
-      }
-      .main-container {
-        padding-bottom: calc(var(--footer-height) + 20px);
-      }
-    }
-  </style>
+        .resume-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        .resume-card:hover .resume-image {
+            transform: scale(1.03);
+        }
+
+        .template-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 0.75rem;
+            margin-bottom: 0.2rem;
+            letter-spacing: -0.3px;
+        }
+        .template-sub {
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        /* ===== NEW FOOTER (from second file) ===== */
+        footer {
+            background: #0b1426;
+            color: white;
+            height: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            padding: 0 12px;
+        }
+        .design-footer {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+        .highlight {
+            color: #facc15;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+        .highlight:hover {
+            color: #fde047;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            footer {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 35;
+            }
+            .main-container {
+                padding-bottom: 90px;
+            }
+        }
+
+        /* extra spacing for grid note */
+        .mt-10 {
+            margin-top: 2.5rem;
+        }
+        .border-t {
+            border-top: 1px solid #e5e7eb;
+        }
+        .pt-6 {
+            padding-top: 1.5rem;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- NAVBAR (only Pro Developing) -->
-  <nav class="new-nav">
-    <div class="flex items-center">
-      <span class="logo-blue">Pro </span>
-      <span class="logo-orange">Developing</span>
-    </div>
-  </nav>
-
-  <!-- MAIN CONTENT: Resume Builder with local images 1.jpg , 2.jpg, 3.jpg, 4.jpg
-       (files must be present in same folder: 1.jpg, 2.jpg, 3.jpg, 4.jpg) 
-       using exactly those filenames as requested "local image jalsi ki 1.jpg 2.jpg 3.jpg 4.jpg"
-  -->
-  <main class="main-container">
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-orange-600 inline-block text-transparent bg-clip-text">Resume Builder</h1>
-      <p class="text-gray-600 text-lg mt-2">Professionally designed templates</p>
-    </div>
-
-    <!-- 2x2 grid of resume images (clickable) using .jpg extension as requested -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
-      
-      <!-- card 1 - 1.jpg -> 1.html -->
-      <div class="resume-card" onclick="window.location.href='1template.html'">
-        <div class="demo-img-wrapper">
-          <img src="1r.jpg" alt="Resume Template 1" class="resume-image" loading="lazy">
+    <!-- ============================================================ -->
+    <!--  NEW NAVBAR  (Pro Toolss branding, home button)              -->
+    <!-- ============================================================ -->
+    <nav class="new-nav">
+        <div class="logo">
+            <span class="logo-blue">Pro</span>
+            <span class="logo-orange">Toolss</span>
         </div>
-        <div class="template-name">Resume Template</div>
-        <p class="template-sub">Corporate Blue · ATS friendly</p>
-      </div>
 
-      <!-- card 2 - 2.jpg -> 2.html -->
-      <div class="resume-card" onclick="window.location.href='2.html'">
-        <div class="demo-img-wrapper">
-          <img src="r2.jpg" alt="Resume Template 2" class="resume-image" loading="lazy">
+        <button id="homeBtn" class="home-btn" aria-label="Home">
+            <div class="lines">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span class="label">Home</span>
+        </button>
+    </nav>
+
+    <!-- ============================================================ -->
+    <!--  MAIN CONTENT – Resume Builder (grid with images)            -->
+    <!-- ============================================================ -->
+    <main class="main-container">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-orange-600 inline-block text-transparent bg-clip-text">
+                Resume Builder
+            </h1>
+            <p class="text-gray-600 text-lg mt-2">Professionally designed templates</p>
         </div>
-        <div class="template-name">Resume Template</div>
-        <p class="template-sub">Minimal Dark · senior</p>
-      </div>
-      </div>
-    </div>
 
-    <!-- note (empty but kept from original) -->
-    <div class="mt-10 text-center text-sm text-gray-400 border-t pt-6">
-    </div>
+        <!-- 2×2 grid of resume cards (local images) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
 
-  </main>
+            <!-- card 1 → 1template.html -->
+            <div class="resume-card" onclick="window.location.href='1template.html'">
+                <div class="demo-img-wrapper">
+                    <img src="1r.jpg" alt="Resume Template 1" class="resume-image" loading="lazy">
+                </div>
+                <div class="template-name">Resume Template</div>
+                <p class="template-sub">Corporate Blue · ATS friendly</p>
+            </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="design-footer">
-      Design by 
-      <a href="https://www.prodeveloping.online" target="_blank" class="yellow" style="text-decoration:none;">
-        Pro Developing
-      </a>
-    </div>
-  </footer>
+            <!-- card 2 → 2.html -->
+            <div class="resume-card" onclick="window.location.href='#home'">
+                <div class="demo-img-wrapper">
+                    <img src="r2.jpg" alt="Resume Template 2" class="resume-image" loading="lazy">
+                </div>
+                <div class="template-name">Resume Template</div>
+                <p class="template-sub">Minimal Dark · senior</p>
+            </div>
 
-  <script>
-    // Click handling is already in onclick attributes
-    // Any additional JS can go here
-    console.log('Resume builder ready – local images: r1.jpg, r1.jpg, 3.jpg, 4.jpg');
-  </script>
+        </div><!-- /grid -->
+
+        <!-- optional spacer -->
+        <div class="mt-10 text-center text-sm text-gray-400 border-t pt-6">
+            <!-- reserved for future use -->
+        </div>
+    </main>
+
+    <!-- ============================================================ -->
+    <!--  NEW FOOTER  (Pro Toolss branding, link to protoolss.online) -->
+    <!-- ============================================================ -->
+    <footer>
+        <div class="design-footer">
+            Design by
+            <a href="https://www.protoolss.online" target="_blank" class="highlight">
+                Pro Toolss
+            </a>
+        </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!--  SCRIPT – Home button redirect                                -->
+    <!-- ============================================================ -->
+    <script>
+        document.getElementById('homeBtn').addEventListener('click', function() {
+            window.location.href = 'https://www.protoolss.online';
+        });
+
+        console.log('✅ Resume Builder with new navbar & footer (Pro Toolss)');
+        console.log('📸 Local images: 1r.jpg, r2.jpg');
+        console.log('🖼️ Favicon set from your URL');
+    </script>
+
 </body>
-  </html>
-  
+</html>
